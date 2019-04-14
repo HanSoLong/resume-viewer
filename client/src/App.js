@@ -288,7 +288,7 @@ class App extends React.Component {
               </div>
           </Hint>:null}
 
-        </XYPlot>
+        </XYPlot><br/>
 
         </div>
           <div style={{ float: "left" }} ref={this.sizeRef}>

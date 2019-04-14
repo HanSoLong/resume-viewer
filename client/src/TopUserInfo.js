@@ -3,8 +3,6 @@ import { BrowserRouter as Router, Route, Link, withRouter } from "react-router-d
 
 class TopUserInfo extends React.Component{
 
-    
-
     logoutHandler = () => {
         this.props.logout();
     }

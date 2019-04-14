@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Chart from './App'
 import LoginPage from './LoginPage'
 import TopUserInfo from './TopUserInfo'
+import RegisterPage from './RegisterPage'
 
 class TopNav extends React.Component{
     constructor(props){
@@ -28,13 +29,16 @@ class TopNav extends React.Component{
             <div>
             <ul>
                 <li>
-                <Link to="/resume">Resume</Link>
+                    <Link to="/resume">Resume</Link>
                 </li>
                 <li>
-                <Link to="/chart">Chart</Link>
+                    <Link to="/chart">Chart</Link>
                 </li>
                 <li>
                     <Link to="/login">Login</Link>
+                </li>
+                <li>
+                    <Link to="/register">Register</Link>
                 </li>
             </ul>
             <TopUserInfo loginStatus={this.state.loginStatus} userName={this.state.userName}/>
@@ -44,19 +48,12 @@ class TopNav extends React.Component{
             <Route exact path="/resume" render={(props)=>(<Resume {...props}/>)} />
             <Route exact path="/chart" render={(props)=><Chart loginStatus={this.state.loginStatus} userName={this.state.userName}  {...props} />}/>
             <Route exact path="/login" render={(props)=><LoginPage loginSuccess={this.loginSuccess} {...props}/>}/>
+            <Route exact path="/register" render={(props)=><RegisterPage/>}/>
+            <Route exact path="/verifyemail" render={(props)=><VerifyEmail/>}/>
             </div>
         </Router>
         );
     }
-  }
-  
-  
-  function About() {
-    return (
-      <div>
-        <h2>About</h2>
-      </div>
-    );
   }
 
 class Resume extends React.Component{
@@ -64,9 +61,21 @@ class Resume extends React.Component{
         super(props);
     }
     render(){
-        return(<h3>Resume</h3>)
+        return(<div>
+            resume
+        </div>)
     }
     
+}
+
+class VerifyEmail extends React.Component{
+    render(){
+        return(
+            <div>
+                Verify code: <input/>
+            </div>
+        );
+    }
 }
 
 export default TopNav;
