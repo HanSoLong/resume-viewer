@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
+const nodemailer = require('nodemailer');
 const port = process.env.PORT || 5000;
 
 const DATABASE_NAME = 'testdb';
@@ -22,6 +23,42 @@ MongoClient.connect('mongodb://localhost:27017', (err, client) => {
   // Client returned
   db = client.db('testdb');
 });
+
+function sendMail(){
+  var transporter = nodemailer.createTransport({
+    host: "smtp-mail.outlook.com", // hostname
+    secureConnection: false, // TLS requires secureConnection to be false
+    port: 587, // port for secure SMTP
+    tls: {
+       ciphers:'SSLv3'
+    },
+    auth: {
+        user: 'socialmedia36@outlook.com',
+        pass: 'socialmedia123456'
+    }
+  });
+
+// setup e-mail data, even with unicode symbols
+  var mailOptions = {
+      from: 'test-eamil-address', // sender address (who sends)
+      to: '895328158@qq.com', // list of receivers (who receives)
+      subject: 'Hello ', // Subject line
+      text: 'Hello world ', // plaintext body
+      html: '<b>Hello world </b><br> This is the first email sent with Nodemailer in Node.js' // html body
+  };
+
+  // send mail with defined transport object
+  transporter.sendMail(mailOptions, function(error, info){
+      if(error){
+          return console.log(error);
+      }
+
+      console.log('Message sent: ' + info.response);
+  });
+
+}
+sendMail();
+//app.get('/testmail', sendMail);
 
 async function getScore(req, res) {
   const routeParams = req.params;
