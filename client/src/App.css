@@ -1,0 +1,20 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.progress-bar {
+  position: relative;
+  height: 20px;
+  width: 300px;
+  padding: 0px;
+  border: 1px solid #333;
+  cursor: pointer;
+}
+
+.filler {
+  background: #1da598;
+  height: 100%;
+  transition: width 0.1s ease-in;
+}
+
