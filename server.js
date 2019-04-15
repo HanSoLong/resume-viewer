@@ -24,27 +24,28 @@ MongoClient.connect('mongodb://localhost:27017', (err, client) => {
   db = client.db('testdb');
 });
 
-function sendMail(){
-  var transporter = nodemailer.createTransport({
-    host: "smtp-mail.outlook.com", // hostname
-    secureConnection: false, // TLS requires secureConnection to be false
-    port: 587, // port for secure SMTP
-    tls: {
-       ciphers:'SSLv3'
-    },
-    auth: {
-        user: 'socialmedia36@outlook.com',
-        pass: 'socialmedia123456'
-    }
-  });
+// E-mail config
+const transporter = nodemailer.createTransport({
+  host: "smtp-mail.outlook.com", // hostname
+  secureConnection: false, // TLS requires secureConnection to be false
+  port: 587, // port for secure SMTP
+  tls: {
+     ciphers:'SSLv3'
+  },
+  auth: {
+      user: 'socialmedia36@outlook.com',
+      pass: 'socialmedia123456'
+  }
+});
 
+function sendMail(address, code){
 // setup e-mail data, even with unicode symbols
   var mailOptions = {
       from: 'test-eamil-address', // sender address (who sends)
-      to: '895328158@qq.com', // list of receivers (who receives)
-      subject: 'Hello ', // Subject line
-      text: 'Hello world ', // plaintext body
-      html: '<b>Hello world </b><br> This is the first email sent with Nodemailer in Node.js' // html body
+      to: address, // list of receivers (who receives)
+      subject: 'Verify Code', // Subject line
+      text: code, // plaintext body
+      //html: '<b>Hello world </b><br> This is the first email sent with Nodemailer in Node.js' // html body
   };
 
   // send mail with defined transport object
@@ -57,8 +58,110 @@ function sendMail(){
   });
 
 }
-sendMail();
-//app.get('/testmail', sendMail);
+
+function makeVerifyCode(length) {
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (var i = 0; i < length; i++)
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+  return text;
+}
+
+async function handleRegistration(req,res){
+  const userName = req.body.username;
+  const passWord = req.body.password;
+  const emailAddress = req.body.email;
+  console.log("attempt")
+  const queryUsername = {username: userName};
+  const queryEmail = {email: emailAddress};
+  const regAttempts = db.collection("RegistrationAttempts");
+  const actualUser = db.collection("UserAccount");
+
+  let response={
+    status:''
+  }
+
+  let tempResult = null;
+
+  tempResult = await actualUser.find(queryUsername).toArray();
+  if(tempResult.length > 0){
+    response.status = 'usernameTaken'
+      console.log(" username taken in actual user");
+  }
+
+  tempResult = await regAttempts.find(queryUsername).toArray();
+  if(tempResult.length > 0){
+    response.status = 'usernameTaken'
+      console.log(" username taken in attempt");
+  }
+
+  tempResult = await actualUser.find(queryEmail).toArray();
+  if(tempResult.length > 0){
+    response.status = 'emailExists'
+      console.log(" email exists in actual user");
+  }
+
+  tempResult = await regAttempts.find(queryEmail).toArray();
+  if(tempResult.length > 0){
+    response.status = 'emailExists'
+      console.log(" email exists in attempt");
+  }
+
+  if(response.status === ''){
+    console.log("start to insert");
+    const time = new Date();
+    const verifyCode = makeVerifyCode(5);
+    const document={username: userName, password: passWord, email: emailAddress, datetime:time, verifycode: verifyCode};
+
+    await regAttempts.insertOne(document);
+    await sendMail(emailAddress,verifyCode);
+
+    response.status = 'success';
+    console.log("insert success");
+  }
+  console.log("status ",response.status);
+  res.json(response);
+}
+app.post('/submitregistration', handleRegistration);
+
+async function finishRegistration(req, res){
+  const userName = req.body.username;
+  const passWord = req.body.password;
+  const emailAddress = req.body.email;
+  const verifyCode = req.body.verifycode;
+
+  const regAttempts = db.collection("RegistrationAttempts");
+  const actualUser = db.collection("UserAccount");
+
+  const queryAttemp = {username: userName, password: passWord, email: emailAddress, verifycode: verifyCode};
+
+  let tempResult = await regAttempts.find(queryAttemp).toArray();
+  let response={
+    status:''
+  }
+
+  const regTime = new Date();
+  if(tempResult.length === 1){
+    const formalUser = {
+      username: userName,
+      password: passWord,
+      email: emailAddress,
+      timeofreg: regTime
+    }
+
+    await actualUser.insertOne(formalUser);
+    await regAttempts.deleteOne(queryAttemp);
+
+    response.status='success';
+  }else{
+    response.status='wrongcode';
+  }
+
+  res.json(response);
+}
+app.post('/verifyaccount', finishRegistration);
 
 async function getScore(req, res) {
   const routeParams = req.params;

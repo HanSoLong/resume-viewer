@@ -12,7 +12,7 @@ class TopUserInfo extends React.Component{
             <div>
             {this.props.loginStatus ? (
             <div>Welcome {this.props.userName}<br/>
-            <button onClick={this.logoutHandler}>Logout</button>
+            <button onClick={this.props.logoutHandler}>Logout</button>
             </div>
             ): "Please login"}
             </div>

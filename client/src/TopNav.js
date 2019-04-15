@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Chart from './App'
 import LoginPage from './LoginPage'
 import TopUserInfo from './TopUserInfo'
-import RegisterPage from './RegisterPage'
+import RegisterWrapper from './RegisterPage'
 
 class TopNav extends React.Component{
     constructor(props){
@@ -22,6 +22,13 @@ class TopNav extends React.Component{
         });
     }
 
+    logoutHandler = () => {
+        this.setState({
+            loginStatus: false,
+            userName: ''
+        });
+    }
+
     render(){
         console.log("TopNav page username",this.state.userName);
         return (
@@ -34,22 +41,23 @@ class TopNav extends React.Component{
                 <li>
                     <Link to="/chart">Chart</Link>
                 </li>
+                {!this.state.loginStatus && 
                 <li>
                     <Link to="/login">Login</Link>
-                </li>
+                </li>}
+                {!this.state.loginStatus && 
                 <li>
                     <Link to="/register">Register</Link>
-                </li>
+                </li>}
             </ul>
-            <TopUserInfo loginStatus={this.state.loginStatus} userName={this.state.userName}/>
+            <TopUserInfo loginStatus={this.state.loginStatus} logoutHandler={this.logoutHandler} userName={this.state.userName}/>
             <hr />
     
             <Route exact path="/" render={(props)=><Chart loginStatus={this.state.loginStatus} userName={this.state.userName} {...props} />} />
             <Route exact path="/resume" render={(props)=>(<Resume {...props}/>)} />
             <Route exact path="/chart" render={(props)=><Chart loginStatus={this.state.loginStatus} userName={this.state.userName}  {...props} />}/>
             <Route exact path="/login" render={(props)=><LoginPage loginSuccess={this.loginSuccess} {...props}/>}/>
-            <Route exact path="/register" render={(props)=><RegisterPage/>}/>
-            <Route exact path="/verifyemail" render={(props)=><VerifyEmail/>}/>
+            <Route exact path="/register" render={(props)=><RegisterWrapper/>}/>
             </div>
         </Router>
         );
@@ -69,10 +77,28 @@ class Resume extends React.Component{
 }
 
 class VerifyEmail extends React.Component{
+    constructor(props){
+        super(props);
+        this.state={
+            verifyCode: ''
+        }
+    }
+
+    onChangeHandler = (event) => {
+        this.setState({
+            verifyCode: event.target.value
+        })
+    }
+
+    submitVerifyCode = () => {
+        
+    }
+
     render(){
         return(
             <div>
-                Verify code: <input/>
+                Verify code: <input value={this.state.verifyCode} onChange={this.onChangeHandler}/><br/>
+                <button onClick={this.submitVerifyCode}>Submit</button>
             </div>
         );
     }
