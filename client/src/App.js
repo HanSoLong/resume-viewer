@@ -191,6 +191,7 @@ class App extends React.Component {
         actualScore[i] = this.lengthToScore(this.state.length_3[i]);
       }
     }
+    if(this.props.userName === '') this.props.history.push('/login');
     const data = [
       {x: 0, y: 8, size: 4, color: 60},
       {x: 1, y: 5, size: 3, color: 50},

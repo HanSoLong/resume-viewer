@@ -57,7 +57,7 @@ class TopNav extends React.Component{
             <Route exact path="/resume" render={(props)=>(<Resume {...props}/>)} />
             <Route exact path="/chart" render={(props)=><Chart loginStatus={this.state.loginStatus} userName={this.state.userName}  {...props} />}/>
             <Route exact path="/login" render={(props)=><LoginPage loginSuccess={this.loginSuccess} {...props}/>}/>
-            <Route exact path="/register" render={(props)=><RegisterWrapper/>}/>
+            <Route path="/register" render={(props)=><RegisterWrapper/>}/>
             </div>
         </Router>
         );

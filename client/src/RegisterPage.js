@@ -145,10 +145,10 @@ class RegisterWrapper extends React.Component{
             password: this.state.password
             }
         return(
-            <Router>
+            <div>
                 <Route exact path={match.path} render={(props)=><RegisterPage liftingInfo={this.collectRegInfo} {...props}/>}/>
                 <Route exact path={`${match.path}/verifyemail`} render={(props)=><VerifyEmail regInfo={regInfo} {...props}/>}/>
-            </Router>
+            </div>
         );
     }
 }
@@ -194,7 +194,7 @@ class VerifyEmail extends React.Component{
                     errTip: '',
                     errTipFlag: false
                 });
-                this.props.history.push('/');
+                this.props.history.push('/login');
                 break;
             case 'wrongcode':
                 this.setState({
