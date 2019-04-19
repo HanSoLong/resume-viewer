@@ -69,18 +69,36 @@ function makeVerifyCode(length) {
   return text;
 }
 
-async function handleRegistration(req,res){
+async function setResume(req, res){
+  const userName = req.body.username;
+  const resume = req.body.resume;
+  const resumeDB = db.collection("Resume");
+
+  let response={
+    status: 'success'
+  }
+
+  const document = {
+    username: userName,
+    resume: resume
+  }
+
+  await resumeDB.insertOne(document);
+  res.json(response);
+}
+app.post('/submitresume', setResume);
+
+async function handleRegistration(req, res){
   const userName = req.body.username;
   const passWord = req.body.password;
   const emailAddress = req.body.email;
-  console.log("attempt")
   const queryUsername = {username: userName};
   const queryEmail = {email: emailAddress};
   const regAttempts = db.collection("RegistrationAttempts");
   const actualUser = db.collection("UserAccount");
 
   let response={
-    status:''
+    status: ''
   }
 
   let tempResult = null;

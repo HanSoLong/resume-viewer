@@ -5,6 +5,7 @@ import Chart from './App'
 import LoginPage from './LoginPage'
 import TopUserInfo from './TopUserInfo'
 import RegisterWrapper from './RegisterPage'
+import TextEditor from './slate/Editor'
 
 class TopNav extends React.Component{
     constructor(props){
@@ -54,7 +55,7 @@ class TopNav extends React.Component{
             <hr />
     
             <Route exact path="/" render={(props)=><Chart loginStatus={this.state.loginStatus} userName={this.state.userName} {...props} />} />
-            <Route exact path="/resume" render={(props)=>(<Resume {...props}/>)} />
+            <Route exact path="/resume" render={(props)=>(<TextEditor {...props}/>)} />
             <Route exact path="/chart" render={(props)=><Chart loginStatus={this.state.loginStatus} userName={this.state.userName}  {...props} />}/>
             <Route exact path="/login" render={(props)=><LoginPage loginSuccess={this.loginSuccess} {...props}/>}/>
             <Route path="/register" render={(props)=><RegisterWrapper/>}/>
