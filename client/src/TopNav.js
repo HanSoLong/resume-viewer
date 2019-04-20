@@ -5,7 +5,7 @@ import Chart from './App'
 import LoginPage from './LoginPage'
 import TopUserInfo from './TopUserInfo'
 import RegisterWrapper from './RegisterPage'
-import TextEditor from './slate/Editor'
+import TextEditor from './slate/EditorWrapper'
 
 class TopNav extends React.Component{
     constructor(props){
