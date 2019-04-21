@@ -72,7 +72,7 @@ function makeVerifyCode(length) {
 async function setResume(req, res){
   const userName = req.body.username;
   const resume = req.body.resume;
-  const resumeDB = db.collection("Resume");
+  const collection = db.collection("Resume");
 
   let response={
     status: 'success'
@@ -80,13 +80,31 @@ async function setResume(req, res){
 
   const document = {
     username: userName,
-    resume: resume
+    resume: resume,
+    datetime: convertDate(req.body.datetime)
   }
 
-  await resumeDB.insertOne(document);
+  await collection.insertOne(document);
   res.json(response);
 }
 app.post('/submitresume', setResume);
+
+async function getResume(req, res){
+  const userName = req.body.username;
+  const collection = db.collection("Resume");
+  const query = {username: userName};
+
+  collection.find(query).limit(1).sort({datetime: -1}).toArray(function(err, result) {
+    if (err) throw err;
+    //console.log(result[0]);
+    const response = {
+      username: userName,
+      result: result[0]
+    };
+    res.json(response);
+  });
+}
+app.post('/getresume', getResume);
 
 async function handleRegistration(req, res){
   const userName = req.body.username;
@@ -106,29 +124,29 @@ async function handleRegistration(req, res){
   tempResult = await actualUser.find(queryUsername).toArray();
   if(tempResult.length > 0){
     response.status = 'usernameTaken'
-      console.log(" username taken in actual user");
+      //console.log(" username taken in actual user");
   }
 
   tempResult = await regAttempts.find(queryUsername).toArray();
   if(tempResult.length > 0){
     response.status = 'usernameTaken'
-      console.log(" username taken in attempt");
+      //console.log(" username taken in attempt");
   }
 
   tempResult = await actualUser.find(queryEmail).toArray();
   if(tempResult.length > 0){
     response.status = 'emailExists'
-      console.log(" email exists in actual user");
+      //console.log(" email exists in actual user");
   }
 
   tempResult = await regAttempts.find(queryEmail).toArray();
   if(tempResult.length > 0){
     response.status = 'emailExists'
-      console.log(" email exists in attempt");
+      //console.log(" email exists in attempt");
   }
 
   if(response.status === ''){
-    console.log("start to insert");
+    //console.log("start to insert");
     const time = new Date();
     const verifyCode = makeVerifyCode(5);
     const document={username: userName, password: passWord, email: emailAddress, datetime:time, verifycode: verifyCode};
@@ -137,9 +155,9 @@ async function handleRegistration(req, res){
     await sendMail(emailAddress,verifyCode);
 
     response.status = 'success';
-    console.log("insert success");
+    //console.log("insert success");
   }
-  console.log("status ",response.status);
+  //console.log("status ",response.status);
   res.json(response);
 }
 app.post('/submitregistration', handleRegistration);
@@ -209,10 +227,10 @@ async function loginAttempt(req, res){
   const query = {username: userName, password: passWord};
   const collection = db.collection("UserAccount");
   let loginFlag = false;
-  console.log(query);
+  //console.log(query);
   collection.find(query).toArray(function(err, result){
     if (err) throw err;
-    console.log(result.length);
+    //console.log(result.length);
     if(result.length === 1){
       loginFlag = true;
     }else{
@@ -222,14 +240,16 @@ async function loginAttempt(req, res){
       loginsuccess: loginFlag,
       username: result[0].username
     };
-    console.log(response.loginsuccess);
+    //console.log(response.loginsuccess);
     res.json(response);
   });
   
 }
 app.post('/loginattempt', jsonParser, loginAttempt);
 
-
+function convertDate(datetime){
+  return new Date(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, datetime.Millisecond);
+}
 
 async function setScore(req, res){
   const routeParams = req.params;
@@ -239,7 +259,7 @@ async function setScore(req, res){
   const score3 = req.body.score3;
   const datetime = req.body.datetime;
   const formatDateTime = new Date(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, datetime.Millisecond);
-  console.log(formatDateTime);
+  //console.log(formatDateTime);
   const document = {
     username: userName,
     score1: score1,
@@ -262,7 +282,7 @@ async function setUserActivity(req, res){
   const routeParams = req.params;
   const userName = routeParams.username;
   let collection = null;
-  console.log("receive set activity request")
+  //console.log("receive set activity request")
   if(req.body.activity === "mouseover"){
     collection = db.collection("UserMouseOver");
   }else if(req.body.activity === "select"){
@@ -284,7 +304,7 @@ async function setUserActivity(req, res){
   }
   await collection.insertOne(document);
   res.json(response);
-  console.log("insert success");
+  //console.log("insert success");
 }
 app.post('/setuseractivity/:username', jsonParser, setUserActivity);
 

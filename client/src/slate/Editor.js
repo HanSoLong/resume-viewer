@@ -68,8 +68,9 @@ const isCodeHotkey = isKeyHotkey('mod+`')
 
 
 class RichTextExample extends React.Component {
-
-  state = {
+constructor(props){
+  super(props);
+  this.state = {
     value: Value.fromJSON({
       document: {
         nodes: [
@@ -112,8 +113,7 @@ class RichTextExample extends React.Component {
       },
     }),
   }
-
-
+}
   hasMark = type => {
     const { value } = this.state
     return value.activeMarks.some(mark => mark.type === type)
@@ -121,18 +121,18 @@ class RichTextExample extends React.Component {
 
   changeTitle = ({value}) => {
     let actualTitle = value.toJSON().document.nodes[0].nodes[0].leaves[0].text;
-    this.setState({title: value})
     if(this.state.title.toJSON().document.nodes[0].nodes[0].leaves[0].text !== actualTitle){
       this.props.onChange('title',actualTitle,this.props.index);
     }
+    this.setState({title: value})
   }
 
   onTextChange = ({ value }) => {
     let actualText = value.toJSON().document.nodes[0].nodes[0].leaves[0].text;
-    this.setState({ value })
     if(this.state.value.toJSON().document.nodes[0].nodes[0].leaves[0].text !== actualText){
       this.props.onChange('text',actualText,this.props.index);
     }
+    this.setState({ value })
   }
 
   removeEditor = () => {

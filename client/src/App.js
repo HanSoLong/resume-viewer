@@ -22,7 +22,7 @@ class App extends React.Component {
     this.totalScore = 100; //total score
   }
 
-  componentDidMount() {
+  componentWillMount() {
     //console.log(this.sizeRef.current.clientWidth);
     //this.barLength = 300;
     //this.barLength = this.sizeRef.current.clientWidth - 2; //substracting the width of both borderlines
