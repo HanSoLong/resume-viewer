@@ -1,5 +1,4 @@
 import { Editor } from 'slate-react'
-import { Value } from 'slate'
 
 import React from 'react'
 import { isKeyHotkey } from 'is-hotkey'
@@ -13,54 +12,6 @@ import { isKeyHotkey } from 'is-hotkey'
 
 const DEFAULT_NODE = 'paragraph'
 
-/*const initValue = {
-  document: {
-    nodes: [
-      {
-        object: 'block',
-        type: 'paragraph',
-        nodes: [
-          {
-            object: 'text',
-            leaves: [
-              {
-                text: 'A line of text.',
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-};
-
-const initTitle = {
-  document: {
-    nodes: [
-      {
-        object: 'block',
-        type: 'paragraph',
-        nodes: [
-          {
-            object: 'text',
-            leaves: [
-              {
-                text: 'Title',
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-};*/
-
-/**
- * Define hotkey matchers.
- *
- * @type {Function}
- */
-
 const isBoldHotkey = isKeyHotkey('mod+b')
 const isItalicHotkey = isKeyHotkey('mod+i')
 const isUnderlinedHotkey = isKeyHotkey('mod+u')
@@ -68,71 +19,18 @@ const isCodeHotkey = isKeyHotkey('mod+`')
 
 
 class RichTextExample extends React.Component {
-constructor(props){
-  super(props);
-  this.state = {
-    value: Value.fromJSON({
-      document: {
-        nodes: [
-          {
-            object: 'block',
-            type: 'paragraph',
-            nodes: [
-              {
-                object: 'text',
-                leaves: [
-                  {
-                    text: this.props.initValue.text,
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    }),
 
-    title: Value.fromJSON({
-      document: {
-        nodes: [
-          {
-            object: 'block',
-            type: 'paragraph',
-            nodes: [
-              {
-                object: 'text',
-                leaves: [
-                  {
-                    text: this.props.initValue.title,
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    }),
-  }
-}
   hasMark = type => {
-    const { value } = this.state
+    const { value } = this.props.value
     return value.activeMarks.some(mark => mark.type === type)
   }
 
-  changeTitle = ({value}) => {
-    let actualTitle = value.toJSON().document.nodes[0].nodes[0].leaves[0].text;
-    if(this.state.title.toJSON().document.nodes[0].nodes[0].leaves[0].text !== actualTitle){
-      this.props.onChange('title',actualTitle,this.props.index);
-    }
-    this.setState({title: value})
+  onTitleChange = ({ value }) => {
+    this.props.onChange('title', value, this.props.index);
   }
 
   onTextChange = ({ value }) => {
-    let actualText = value.toJSON().document.nodes[0].nodes[0].leaves[0].text;
-    if(this.state.value.toJSON().document.nodes[0].nodes[0].leaves[0].text !== actualText){
-      this.props.onChange('text',actualText,this.props.index);
-    }
-    this.setState({ value })
+    this.props.onChange('text', value, this.props.index);
   }
 
   removeEditor = () => {
@@ -140,7 +38,7 @@ constructor(props){
   };
 
   hasBlock = type => {
-    const { value } = this.state
+    const value = this.props.value
     return value.blocks.some(node => node.type === type)
   }
 
@@ -152,7 +50,7 @@ constructor(props){
     return (
       <div>
         <hr/>
-        <Editor value={this.state.title} onChange={this.changeTitle}/>
+        <Editor value={this.props.title} onChange={this.onTitleChange}/>
         <hr/>
           {this.renderMarkButton('bold', 'bold')}
           {this.renderMarkButton('italic', 'italic')}
@@ -169,7 +67,7 @@ constructor(props){
           autoFocus
           placeholder="Enter some rich text..."
           ref={this.ref}
-          value={this.state.value}
+          value={this.props.value}
           onChange={this.onTextChange}
           onKeyDown={this.onKeyDown}
           renderNode={this.renderNode}
@@ -192,15 +90,6 @@ constructor(props){
   }
 
   renderBlockButton = (type, icon) => {
-
-    if (['numbered-list', 'bulleted-list'].includes(type)) {
-      const { value: { document, blocks } } = this.state
-
-      if (blocks.size > 0) {
-        const parent = document.getParent(blocks.first().key)
-      }
-    }
-
     return (
       <button
         onMouseDown={event => this.onClickBlock(event, type)}

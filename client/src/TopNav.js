@@ -55,7 +55,7 @@ class TopNav extends React.Component{
             <hr />
     
             <Route exact path="/" render={(props)=><Chart loginStatus={this.state.loginStatus} userName={this.state.userName} {...props} />} />
-            <Route exact path="/resume" render={(props)=>(<TextEditor userName={this.state.userName} {...props}/>)} />
+            <Route exact path="/resume" render={(props)=>(<TextEditor userName={this.state.userName} loginStatus={this.state.loginStatus} {...props}/>)} />
             <Route exact path="/chart" render={(props)=><Chart loginStatus={this.state.loginStatus} userName={this.state.userName}  {...props} />}/>
             <Route exact path="/login" render={(props)=><LoginPage loginSuccess={this.loginSuccess} {...props}/>}/>
             <Route path="/register" render={(props)=><RegisterWrapper/>}/>
@@ -64,18 +64,6 @@ class TopNav extends React.Component{
         );
     }
   }
-
-class Resume extends React.Component{
-    constructor(props){
-        super(props);
-    }
-    render(){
-        return(<div>
-            resume
-        </div>)
-    }
-    
-}
 
 class VerifyEmail extends React.Component{
     constructor(props){

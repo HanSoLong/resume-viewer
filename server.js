@@ -72,6 +72,7 @@ function makeVerifyCode(length) {
 async function setResume(req, res){
   const userName = req.body.username;
   const resume = req.body.resume;
+  const resumeTitle = req.body.resumetitle;
   const collection = db.collection("Resume");
 
   let response={
@@ -80,6 +81,7 @@ async function setResume(req, res){
 
   const document = {
     username: userName,
+    resumetitle: resumeTitle,
     resume: resume,
     datetime: convertDate(req.body.datetime)
   }

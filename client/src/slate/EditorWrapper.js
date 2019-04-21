@@ -1,49 +1,93 @@
 import React from "react";
 import CustomEditor from './Editor';
+import { Value } from 'slate'
+
+const initialValue = {
+  document: {
+    nodes: [
+      {
+        object: "block",
+        type: "paragraph",
+        nodes: [
+          {
+            object: "text",
+            leaves: [{ text: "A line of text in a paragraph." }]
+          }
+        ]
+      }
+    ]
+  }
+};
+
+const initialTitle = {
+  document: {
+    nodes: [
+      {
+        object: "block",
+        type: "paragraph",
+        nodes: [
+          {
+            object: "text",
+            leaves: [{ text: "Title" }]
+          }
+        ]
+      }
+    ]
+  }
+};
 
 class EditorWrapper extends React.Component{
     state = {
         value: [],
+        title: [],
       };
     
       componentWillMount() {
+        if(!this.props.loginStatus) this.props.history.push('/login');
         this.getResume();
       }
     
       onChange = (flag, value, index) => {
         let tempArray = this.state.value.slice();
-        console.log("index: ",index)
+          //console.log("index: ",index)
         if(flag === 'text'){
-            tempArray[index].text = value;
+            tempArray[index] = value;
         }else if(flag === 'title'){
-            tempArray[index].title = value;
+            tempArray[index] = value;
         }
         this.setState({ value: tempArray }, function() {
-          console.log(this.state.value);
+          //console.log(this.state.value);
         });
       };
     
       addEditor = () => {
-        let tempArray = this.state.value.slice();
-        let tempInit = {
-          title: "Title",
-          text: "A line of text"
-        }
-        tempArray.push(tempInit);
-        this.setState({ value: tempArray },function(){
-          console.log(this.state.value);
+        let tempTextArray = this.state.value.slice();
+        let tempTitleArray = this.state.title.slice();
+        tempTextArray.push(Value.fromJSON(initialValue));
+        tempTitleArray.push(Value.fromJSON(initialTitle));
+        this.setState({ 
+          value: tempTextArray, 
+          title: tempTitleArray
+        },function(){
+          //console.log(this.state.value);
         });
       };
     
       removeEditor = (index) => {
-        let tempArray = this.state.value.slice();
-        tempArray.splice(index, 1);
-        console.log(index,tempArray);
-        this.setState({ value: tempArray });
+        let tempTextArray = this.state.value.slice();
+        let tempTitleArray = this.state.title.slice();
+        tempTextArray.splice(index, 1);
+        tempTitleArray.splice(index, 1);
+        //console.log(index,tempArray);
+        this.setState({ 
+          value: tempTextArray, 
+          title: tempTitleArray
+        });
       };
 
       editorGenerator = () => {
         const valueArray = this.state.value.slice();
+        const titleArray = this.state.title.slice();
         const editorArray = valueArray.map((value, index) => (
           <CustomEditor
             removeEditor={this.removeEditor}
@@ -51,6 +95,8 @@ class EditorWrapper extends React.Component{
             index={index}
             initValue={valueArray[index]}
             onChange={this.onChange}
+            value={value}
+            title={titleArray[index]}
           />
         ));
         return <div>{editorArray}</div>;
@@ -59,6 +105,7 @@ class EditorWrapper extends React.Component{
       submitResume = async() => {
         const message = {
           username: this.props.userName,
+          resumetitle: this.state.title,
           resume: this.state.value,
           datetime: this.getDateTime()
         }
@@ -94,10 +141,20 @@ class EditorWrapper extends React.Component{
         const data = await response.json();
         console.log(data);
         let tempValue = [];
-        data.result.resume.map((value,index) => {
-          tempValue[index] = value;
+        let tempTitle = [];
+        if(data.result.resume && data.result.resumetitle.length){
+          data.result.resume.map((value,index) => {
+            tempValue[index] = Value.fromJSON(value);
+          });
+  
+          data.result.resumetitle.map((value,index) => {
+            tempTitle[index] = Value.fromJSON(value);
+          });
+        }
+        this.setState({
+          value: tempValue,
+          title: tempTitle
         });
-        this.setState({value: tempValue});
       }
 
       getDateTime(){
