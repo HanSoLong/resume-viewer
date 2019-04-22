@@ -48,16 +48,21 @@ class EditorWrapper extends React.Component{
       }
     
       onChange = (flag, value, index) => {
-        let tempArray = this.state.value.slice();
+        let tempArray = [];
           //console.log("index: ",index)
-        if(flag === 'text'){
+        if(flag === 'title'){
+            tempArray = this.state.title.slice();
             tempArray[index] = value;
-        }else if(flag === 'title'){
+            this.setState({ title: tempArray }, function() {
+              //console.log(this.state.value);
+            });
+        }else if(flag === 'text'){
+            tempArray = this.state.value.slice();
             tempArray[index] = value;
+            this.setState({ value: tempArray }, function() {
+              //console.log(this.state.value);
+            });
         }
-        this.setState({ value: tempArray }, function() {
-          //console.log(this.state.value);
-        });
       };
     
       addEditor = () => {
@@ -120,7 +125,8 @@ class EditorWrapper extends React.Component{
         };
         
         await fetch('/submitresume', fetchOptions);
-        console.log("resume sent")
+        console.log("resume sent");
+        this.props.history.push('/chart');
       };
 
       getResume = async() => {

@@ -3,13 +3,6 @@ import { Editor } from 'slate-react'
 import React from 'react'
 import { isKeyHotkey } from 'is-hotkey'
 //import { Button, Icon, Toolbar } from '../components'
-
-/**
- * Define the default node type.
- *
- * @type {String}
- */
-
 const DEFAULT_NODE = 'paragraph'
 
 const isBoldHotkey = isKeyHotkey('mod+b')
